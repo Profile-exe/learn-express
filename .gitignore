@@ -1,0 +1,4 @@
+node_modules/
+
+# Github Codespaces 설정
+.devcontainer/
