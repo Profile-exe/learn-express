@@ -29,10 +29,7 @@ module.exports = {
 
   getProduct: (req, res, next) => {
     const prodId = req.params.productId;
-    // findAll({ where: { id: prodId }})로 구현 가능
-    // 주의: findAll은 요소가 하나라도 배열로 주므로 첫번째 요소를 받아야함
-    // 배열 구조분해할당을 이용해 첫번째 요소만 받기 ex) ([product]) => {...}
-    // 구조분해할당을 중첩하여 첫 요소(배열)의 첫 요소를 받는것도 가능 [[product]]
+
     Product.findById(prodId)
       .then((product) => {
         res.render('shop/product-detail', {
