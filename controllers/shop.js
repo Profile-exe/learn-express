@@ -10,6 +10,7 @@ module.exports = {
         prods: products,
         pageTitle: 'Shop',
         path: '/',
+        isAuthenticated: req.session.isLoggedIn,
       });
     } catch (err) {
       console.log(err);
@@ -24,6 +25,7 @@ module.exports = {
         prods: products,
         pageTitle: 'All Products',
         path: '/products',
+        isAuthenticated: req.session.isLoggedIn,
       });
     } catch (err) {
       console.log(err);
@@ -39,6 +41,7 @@ module.exports = {
         product,
         pageTitle: product.title,
         path: '/products',
+        isAuthenticated: req.session.isLoggedIn,
       });
     } catch {
       (err) => console.log(err);
@@ -53,6 +56,7 @@ module.exports = {
         pageTitle: 'Your Cart',
         path: '/cart',
         prods: carts,
+        isAuthenticated: req.session.isLoggedIn,
       });
     } catch (err) {
       console.log(err);
@@ -104,12 +108,15 @@ module.exports = {
 
   getOrders: async (req, res, next) => {
     try {
-      const orders = await Order.find({ 'user._id': req.user._id });
+      const orders = await Order.find({
+        'user._id': req.user._id,
+      });
 
       res.render('shop/orders', {
         pageTitle: 'Your Orders',
         path: '/orders',
         orders,
+        isAuthenticated: req.session.isLoggedIn,
       });
     } catch (err) {
       console.log(err);
@@ -120,6 +127,7 @@ module.exports = {
     res.render('shop/checkout', {
       pageTitle: 'Checkout',
       path: '/shop/checkout',
+      isAuthenticated: req.session.isLoggedIn,
     });
   },
 };
