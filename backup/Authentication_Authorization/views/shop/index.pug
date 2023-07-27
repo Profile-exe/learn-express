@@ -5,9 +5,6 @@ block styles
 
 block content
     main
-        if errorMessage.length > 0
-            .box 
-                p.box__item= errorMessage
         if prods.length > 0
             .grid
                 each product in prods
@@ -20,10 +17,7 @@ block content
                             h2.product__price= `$ ${product.price}`
                             p.product__description #{product.description}
                         .card__actions
-                            a.btn(href=`/admin/edit-product/${product._id}?edit=true`) Edit
-                            form(action="/admin/delete-product" method="POST") 
-                                include ../includes/csrfToken.pug
-                                button.btn(type="submit") Delete
-                                input(type="hidden" name="productId" value=product._id)
+                            a.btn(href=`/products/${product._id}`) Details
+                            include ../includes/add-to-cart.pug
         else
             h1 No Products

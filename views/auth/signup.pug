@@ -9,7 +9,7 @@ block content
         if errorMessage.length > 0
             .box 
                 p.box__item= errorMessage
-        form.login-form(action= `/login`, method="POST")
+        form.login-form(action= `/signup`, method="POST")
             include ../includes/csrfToken.pug
             .form-control
                 label(for="email") E-mail
@@ -17,7 +17,7 @@ block content
             .form-control   
                 label(for="password") Password 
                 input(type="password", name="password")#password
-            div(style="display: flex; justify-content: space-between;")
-                button.btn(type="submit") Login
-                .centered 
-                    a.btn(href="/reset") Forgot your password?
+            .form-control 
+                label(for="confirmPassword") Confirm Password
+                input(type="password", name="confirmPassword")#confirmPassword
+            button.btn(type="submit") SignUp
