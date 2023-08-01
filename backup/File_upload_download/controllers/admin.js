@@ -5,6 +5,8 @@ const { validationResult } = require('express-validator');
 const fileHelper = require('../util/file');
 const { Product } = require('../models/product');
 
+const ITEMS_PER_PAGE = 2;
+
 module.exports = {
   getAddProduct: (req, res, next) => {
     if (!req.session.isLoggedIn) {
@@ -52,6 +54,7 @@ module.exports = {
       res.redirect('/admin/products');
     } catch (err) {
       const error = new Error(err);
+      console.log('postAddProduct error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -81,6 +84,7 @@ module.exports = {
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getEditProduct error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -128,6 +132,7 @@ module.exports = {
       await updatedProduct.save();
     } catch (err) {
       const error = new Error(err);
+      console.log('postEditProduct error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -155,22 +160,41 @@ module.exports = {
       res.redirect('/admin/products');
     } catch (err) {
       const error = new Error(err);
+      console.log('postDeleteProduct error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
   },
 
   getProducts: async (req, res, next) => {
+    const page = +req.query.page || 1; // +를 붙이면 숫자로 변환됨
     try {
-      const products = await Product.find({ userId: req.user._id });
+      const numProducts = await Product.find({
+        userId: req.user._id,
+      }).countDocuments();
+
+      const products = await Product.find({ userId: req.user._id })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+
+      const pagenationObj = {
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < numProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(numProducts / ITEMS_PER_PAGE),
+      };
 
       res.render('admin/products', {
         prods: products,
         path: '/admin/products',
         pageTitle: 'Admin Products',
+        ...pagenationObj,
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getProducts error', err);
       error.httpStatusCode = 500;
       return next(error);
     }

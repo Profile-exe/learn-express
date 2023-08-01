@@ -5,34 +5,68 @@ const PDFDocument = require('pdfkit');
 const { Product } = require('../models/product');
 const { Order } = require('../models/order');
 
+const ITEMS_PER_PAGE = 2;
+
 module.exports = {
   getIndex: async (req, res, next) => {
+    const page = +req.query.page || 1; // +를 붙이면 숫자로 변환됨
     try {
-      const products = await Product.find();
+      const numProducts = await Product.find().countDocuments();
+
+      const products = await Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+
+      const pagenationObj = {
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < numProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(numProducts / ITEMS_PER_PAGE),
+      };
 
       res.render('shop/index', {
         prods: products,
         pageTitle: 'Shop',
         path: '/',
+        ...pagenationObj,
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getIndex error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
   },
 
   getProducts: async (req, res, next) => {
+    const page = +req.query.page || 1; // +를 붙이면 숫자로 변환됨
     try {
-      const products = await Product.find();
+      const numProducts = await Product.find().countDocuments();
+
+      const products = await Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+
+      const pagenationObj = {
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < numProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(numProducts / ITEMS_PER_PAGE),
+      };
 
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
         path: '/products',
+        ...pagenationObj,
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getProducts error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -64,6 +98,7 @@ module.exports = {
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getCart error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -79,6 +114,7 @@ module.exports = {
       res.redirect('/cart');
     } catch (err) {
       const error = new Error(err);
+      console.log('postCart error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -92,6 +128,7 @@ module.exports = {
       res.redirect('/cart');
     } catch (err) {
       const error = new Error(err);
+      console.log('postCartDeleteProduct error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -132,6 +169,7 @@ module.exports = {
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getOrders error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -189,7 +227,7 @@ module.exports = {
       pdfDoc.end();
     } catch (err) {
       const error = new Error(err);
-      console.error(err);
+      console.log('getInvoice error', err);
       error.httpStatusCode = 500;
       return next(error);
     }

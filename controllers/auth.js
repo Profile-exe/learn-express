@@ -52,6 +52,7 @@ module.exports = {
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('postLogin error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -115,6 +116,7 @@ module.exports = {
       res.redirect('/login');
     } catch (err) {
       const error = new Error(err);
+      console.log('postSignup error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -160,6 +162,7 @@ module.exports = {
       res.redirect('/');
     } catch (err) {
       const error = new Error(err);
+      console.log('postReset error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -182,6 +185,7 @@ module.exports = {
       });
     } catch (err) {
       const error = new Error(err);
+      console.log('getNewPassword error', err);
       error.httpStatusCode = 500;
       return next(error);
     }
@@ -208,6 +212,7 @@ module.exports = {
       res.redirect('/login');
     } catch (err) {
       const error = new Error(err);
+      console.log('postNewPassword error', err);
       error.httpStatusCode = 500;
       return next(error);
     }

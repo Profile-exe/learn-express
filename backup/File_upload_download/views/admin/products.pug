@@ -25,5 +25,6 @@ block content
                                 include ../includes/csrfToken.pug
                                 button.btn(type="submit") Delete
                                 input(type="hidden" name="productId" value=product._id)
+            include ../includes/pagination.pug
         else
             h1 No Products
