@@ -1,5 +1,0 @@
-if isAuthenticated
-    form(action="/cart" method="POST") 
-        include ./csrfToken.pug
-        button.btn(type="submit") Add to Cart
-        input(type="hidden" name="productId" value=product._id)
