@@ -3,33 +3,41 @@ import React, { Component } from 'react';
 import Image from '../../../components/Image/Image';
 import './SinglePost.css';
 
+const URL =
+  'https://profile-exe-fuzzy-garbanzo-rw66555777vcxr9p-8080.app.github.dev';
+
 class SinglePost extends Component {
   state = {
     title: '',
     author: '',
     date: '',
     image: '',
-    content: ''
+    content: '',
   };
 
   componentDidMount() {
     const postId = this.props.match.params.postId;
-    fetch('URL')
-      .then(res => {
+    fetch(`${URL}/feed/post/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${this.props.token}`,
+      },
+    })
+      .then((res) => {
         if (res.status !== 200) {
           throw new Error('Failed to fetch status');
         }
         return res.json();
       })
-      .then(resData => {
+      .then((resData) => {
         this.setState({
           title: resData.post.title,
           author: resData.post.creator.name,
+          image: `${URL}/${resData.post.imageUrl}`,
           date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
-          content: resData.post.content
+          content: resData.post.content,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }

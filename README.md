@@ -46,6 +46,36 @@ fuser -k -n tcp 3000
 
 ---
 
+### tj/n 사용시 버전 안바뀌는 오류
+
+기존에 `node`가 이미 설치되어 있다면 `n`을 사용하여 버전을 바꿔도 `node` 버전이 바뀌지 않는다.
+
+n으로 설치 시 installed와 active 경로가 다른데, 이를 링크로 연결해주면 된다.
+
+```bash
+$ sudo n
+     copying : node/16.14.0
+   installed : v16.14.0 to /usr/local/bin/node
+      active : v18.17.0 at /home/codespace/nvm/current/bin/node
+```
+
+링크로 연결하기
+
+```bash
+ln -sf installed경로 active경로
+```
+
+결과
+
+```bash
+$ sudo n
+     copying : node/16.14.0
+   installed : v16.14.0 to /usr/local/bin/node
+      active : v16.14.0 at /home/codespace/nvm/current/bin/node
+```
+
+---
+
 ### 502 Bad Gateway 에러 해결
 
 [Check your server.keepAliveTimeout](https://shuheikagawa.com/blog/2019/04/25/keep-alive-timeout/)

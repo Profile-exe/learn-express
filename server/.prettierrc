@@ -4,16 +4,10 @@
   "semi": true,
   "singleQuote": true,
   "parser": "flow",
-  "printWidth": 81,
+  "printWidth": 80,
   "overrides": [
     {
-      "files": [
-        "*.json",
-        "*.jsonc",
-        "*.json5",
-        "*.prettierrc",
-        "*.eslintrc"
-      ],
+      "files": ["*.json", "*.jsonc", "*.json5", "*.prettierrc", "*.eslintrc"],
       "options": {
         "parser": "json"
       }
