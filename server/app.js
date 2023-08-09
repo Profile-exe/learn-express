@@ -61,5 +61,10 @@ mongoose
 
     server.keepAliveTimeout = 61 * 1000;
     server.headersTimeout = 61 * 1.5 * 1000;
+
+    const io = require('./socket').init(server);
+    io.on('connection', (socket) => {
+      console.log('Client connected');
+    });
   })
   .catch((err) => console.log(err));
