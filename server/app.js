@@ -5,13 +5,14 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const { graphqlHTTP } = require('express-graphql');
 
-require('dotenv').config();
+require('dotenv').config({ path: './.env' });
 
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
-
-const isAuth = require('./middleware/is-auth');
+const graphSchema = require('./graphql/schema');
+const graphResolvers = require('./graphql/resolvers');
+const auth = require('./middleware/auth');
+const { clearImage } = require('./util/file');
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -44,8 +45,45 @@ app.use(express.json()); // app.use(bodyParser.json());
 app.use(multer({ storage: fileStorage, fileFilter }).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use('/feed', isAuth, feedRoutes);
-app.use('/auth', authRoutes);
+app.use(auth); // 모든 요청에 대해 auth 미들웨어를 실행
+
+app.use('/post-image', (req, res, next) => {
+  if (!req.isAuth) {
+    const error = new Error('Not authenticated!');
+    error.code = 401;
+    throw error;
+  }
+
+  if (!req.file) {
+    return res.status(200).json({ message: 'No file provide d!' });
+  }
+
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+
+  return res.status(201).json({
+    message: 'File stored.',
+    filePath: req.file.path,
+  });
+});
+
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema: graphSchema,
+    rootValue: graphResolvers,
+    graphiql: true,
+    customFormatErrorFn(err) {
+      if (!err.originalError) {
+        return err;
+      }
+      const { data, message } = err.originalError;
+      const code = err.originalError.code || 500;
+      return { message, status: code, data };
+    },
+  })
+);
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -61,10 +99,5 @@ mongoose
 
     server.keepAliveTimeout = 61 * 1000;
     server.headersTimeout = 61 * 1.5 * 1000;
-
-    const io = require('./socket').init(server);
-    io.on('connection', (socket) => {
-      console.log('Client connected');
-    });
   })
   .catch((err) => console.log(err));
