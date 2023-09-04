@@ -1,0 +1,5 @@
+{
+  "env": {
+    "TEST_ENV": "THIS_IS_TEST_ENV_KEY"
+  }
+}
